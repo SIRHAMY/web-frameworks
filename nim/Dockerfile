@@ -15,18 +15,33 @@ ENV PATH $PATH:/root/.nimble/bin
 
 RUN nimble install -y
 
-RUN nim c {{#build_opts}} {{{.}}} {{/build_opts}} \
+{{#build_command}}
+  RUN {{{.}}}
+{{/build_command}}
+{{^build_command}}
+  RUN nim c {{#build_opts}} {{{.}}} {{/build_opts}} \
     --excessiveStackTrace:off \
     -d:release \
     --passC:-flto \
     --passL:-flto \
     server.nim
+{{/build_command}}
 
 FROM alpine
 
 RUN apk --no-cache add \
       pcre-dev
 
-COPY --from=0 /usr/src/app/server /usr/src/app/server
+{{#custom_files}}
+  COPY --from=0 /usr/src/app/{{{.}}} /usr/src/app/{{{.}}}
+{{/custom_files}}
+{{^custom_files}}
+  COPY --from=0 /usr/src/app/server /usr/src/app/server
+{{/custom_files}}
 
-CMD /usr/src/app/server
+{{#command}}
+  CMD {{{.}}}
+{{/command}}
+{{^command}}
+  CMD /usr/src/app/server
+{{/command}}
