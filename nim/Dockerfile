@@ -29,8 +29,12 @@ RUN nimble install -y
 
 FROM alpine
 
-RUN apk --no-cache add \
-      pcre-dev
+WORKDIR /usr/src/app
+
+RUN apk update && \
+    apk upgrade --no-cache
+
+RUN apk --no-cache add openssl-dev pcre-dev
 
 {{#custom_files}}
   COPY --from=0 /usr/src/app/{{{.}}} /usr/src/app/{{{.}}}

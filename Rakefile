@@ -150,7 +150,6 @@ def create_dockerfile(language, framework, **options)
     { name: ext, version: version }
   end
   config[:version] = config.dig('language', 'version')
-  pp config
 
   File.write(File.join(directory, MANIFESTS[:container]), Mustache.render(File.read(template), config)) if template
 end
